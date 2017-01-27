@@ -1,0 +1,187 @@
+<?php
+namespace App\Http\Controllers\Auth;
+
+use App\User;
+use Validator;
+use Illuminate\Contracts\Auth\Guard; 
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+use Illuminate\Support\Facades\Input;
+use Laravel\Socialite\Contracts\Factory as Socialite;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Http\Response;
+use Illuminate\Http\Request;
+
+class AuthController extends Controller
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Registration & Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles the registration of new users, as well as the
+    | authentication of existing users. By default, this controller uses
+    | a simple trait to add these behaviors. Why don't you explore it?
+    |
+    */
+
+    use AuthenticatesAndRegistersUsers, ThrottlesLogins;
+
+    /**
+     * Create a new authentication controller instance.
+     *
+     * @return void
+     */
+    private $socialite;
+    private $auth;
+    private $users;
+
+    public function __construct(Socialite $socialite ,Guard $auth )
+    {
+         $this->middleware('guest', ['except' => 'getLogout']);
+         $this->socialite = $socialite;
+         $this->auth = $auth;
+    }
+
+
+
+
+       public function getSocialAuth($provider=null)
+       {
+           if(!config("services.$provider")) abort('404'); 
+           //just to handle providers that doesn't exist
+           return $this->socialite->with($provider)->redirect();
+       }
+
+       public function getSocialAuthCallback($provider=null)
+       {
+          if($user = $this->socialite->with($provider)->user())
+          {
+             $this->finduser($user ,$provider );
+          }
+          else
+          {
+             return 'something went wrong';
+          }
+       }
+     //protected $redirectPath = '/dashboard';
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator(array $data)
+    {
+        return Validator::make($data, ['email' => 'required|email|max:255|unique:users',
+                                      'password' => 'required|min:6',
+                                      ]);
+    }
+
+    public function finduser($userData , $provider)
+    {
+         $user = User::where('social_provider_id', '=', $userData->id)->first();
+         if(!$user)
+         {
+            if($provider=='facebook')
+             {
+                $checkemail =  User::where('email', '=', $userData->email)->first();
+                if(!$checkemail)
+                {
+                    $usercreate = new user();
+                    $usercreate->social_provider_id =$userData->id ;
+                    $usercreate->name = $userData->name;
+                    $usercreate->email = $userData->email;
+                    $usercreate->user_dispaly_image = $userData->avatar;
+                    $usercreate->from_social = 1;
+                    $usercreate->save();
+                    $insertUserId  = $usercreate->id;
+                    Auth::loginUsingId($insertUserId);
+                    return redirect('/');
+                }
+                else
+                {
+                    Auth::loginUsingId($checkemail->id);
+                    return redirect('/');
+                }
+             }
+         }
+         else
+         {
+            if($provider=='facebook')
+             {
+                Auth::loginUsingId($user->id);
+                return redirect('/');
+             }
+
+         }
+    }
+    /*Login ajax functrion*/
+    public function postLoginajax(Request $request)
+    {
+        $eventFormData = Input::all();
+        @extract($eventFormData);
+        //print_r($eventFormData);
+        
+        if($request->ajax())
+        {
+            //$status['error'] = array();
+            $status = array();
+            $errror  = array();
+            if(empty($email))
+            {
+                if($email=='')
+                {
+                    $errror['email'] ='Email is required';
+                }
+                if($password=='')
+                {
+                    $errror['password'] ='Password is required';
+                }
+                return response()->json([
+                   'error' => $errror
+                   ]);
+            }
+            else
+            {
+                $credentials = $this->getCredentials($request);
+                if (Auth::attempt($credentials, $request->has('remember')))
+                {
+                    $userData = Auth::user();
+                    $errror['auth']=true;
+                    $errror['userid']=$userData->id;
+                    //return $this->handleUserWasAuthenticated($request, $throttles);
+                }
+                return response()->json([
+                    'loginsuccess' => $errror
+                   ]);
+                }
+            }
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return User
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+        ]);
+    }
+
+    public function authenticate()
+    {
+        $eventFormData = Input::all();
+        @extract($eventFormData);
+        $passwordhas = md5($password);
+        $auth = Auth::attempt(['email' => $email, 'password' => $passwordhas]);
+        print_r($auth);
+       
+    }
+}

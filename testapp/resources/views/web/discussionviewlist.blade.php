@@ -27,11 +27,15 @@
          @endif
         </div>
     </div>
+     <div class="col s12 m4 l4 left-link">
+      <div class="article-hire-sidebar card">
     @if(Auth::check())
     @include('includes.partials.discussionform')
     @else
     @include('includes.partials.loginbox')
     @endif
+    </div>
+</div>
   </div>
 </div>
 <script type="text/javascript">

@@ -1,4 +1,4 @@
-<div class="sidebar">
+
 <p><strong>Login/Signup</strong></p>
       <?php
      $reffer=$_SERVER['REQUEST_URI'];
@@ -31,5 +31,5 @@
         
         <button type="Submit" class="waves-effect waves-light btn article-hire-button">Submit</button> 
         </form>
-      </div>
+
   

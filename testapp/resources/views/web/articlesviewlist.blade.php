@@ -35,7 +35,9 @@
         @if(Auth::check())
         @include('includes.partials.articleform')
         @else
+         <div class="sidebar">
         @include('includes.partials.loginbox')
+        </div>
         @endif
         
     </div>

@@ -1,5 +1,4 @@
- <div class="col s12 m4 l4 left-link">
-      <div class="article-hire-sidebar card">
+
         @if(Session::has('message'))
         <div class="alert alert-dismissible alert-{{ Session::get('alert-class', 'alert-info') }} ">
         <button type="button" class="close" data-dismiss="alert">×</button>
@@ -41,5 +40,4 @@
         </div>
         
         </form>
-      </div>
-    </div>
+     

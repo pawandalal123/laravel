@@ -13,15 +13,18 @@
               <div class="col s12 m6 l6"><a class="waves-effect waves-light btn">Comment 2</a></div>
             </div>
           </div>
+          @if(count($commentArray)>0)
           <ul class="collection">
+          @foreach($commentArray as $commentArray)
             <li class="collection-item avatar">
-              <img src="images/profile-image.jpg" alt="" class="circle responsive-img">
-              <span class="title">Avinash Kumar</span>
-              <p>01, Jan, 2017 <br>
-                 consultant who helped me find the right position and identified the key criteria I was looking for in "I highly recommend. "I highly recommend agency as a professional and extremely competent consultant who helped me find the right position and identified the key criteria I was looking for in "I highly recommend. "I highly recommend agency as a professional and extremely competent consultant who helped
+              <img src="{{$commentArray['image']}}" alt="" class="circle responsive-img">
+              <span class="title">{{$commentArray['name']}}</span>
+              <p>{{date('d M Y',strtotime($commentArray['commnetdate']))}} <br>{{$commentArray['comment']}}
               </p>
             </li>
+            @endforeach()
           </ul>
+          @endif
           <div class="card col s12 m12 l12">
           @if($login==1)
             <div class="input-field">
@@ -48,8 +51,9 @@
         <a href=""><p><strong>{{$articlaCatlist->name}}</strong></p></a>
         </div>
         @endforeach
+        </div>
    @endif
-      </div>
+      
 @if(count($getsimilararticle)>0)
       <div class="article-hire-sidebar card">
         <h5>Featured Article</h5>

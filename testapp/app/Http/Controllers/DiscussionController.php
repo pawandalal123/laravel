@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Model\Common;
+use App\Model\Comments;
 use Appfiles\Repo\UsersInterface;
 use Appfiles\Repo\DiscussionsInterface;
 use Illuminate\Support\Facades\Session;
@@ -147,7 +148,7 @@ class DiscussionController extends Controller
     {
         if($discussionurl)
         {
-            $$discussiondetail = $this->discussion->getBy(array('discussion_url'=>$discussionurl));
+            $discussiondetail = $this->discussion->getBy(array('discussion_url'=>$discussionurl));
             if($discussiondetail)
             {
                 $login=0;
@@ -155,9 +156,43 @@ class DiscussionController extends Controller
                 {
                     $login=1;
                 }
-                $conditionRaw='status=1 and discussion_url !="'.$articleurl.'"';
+                $conditionRaw='status=1 and discussion_url !="'.$discussionurl.'"';
                 $getsimilararticle = $this->discussion->getallByRaw($conditionRaw,array('title','discussion_url'),6);
-                return \View::make('web.discussiondetail',compact('discussiondetail','login','getsimilararticle'));
+                $getcomments = Comments::where(array('commented_id'=>$discussiondetail->id,'status'=>1,'type'=>2))->get();
+                $userids='';
+                $commentArray = array();
+                $userArray = array();
+                if(count($getcomments)>0)
+                {
+                    foreach($getcomments as $getcomments)
+                    {
+                         $imagePatah = URL::asset('web/images/profilePic.png');
+                        $userids.=$getcomments->comment_by.',';
+                        $commentArray[$getcomments->id]= array('comment'=>$getcomments->comment,
+                                                               'created_by'=>$getcomments->comment_by,
+                                                               'name'=>'',
+                                                               'image'=>$imagePatah,
+                                                               'commnetdate'=>$getcomments->created_at);
+
+                   }
+                      $condition = "id in ".'('.substr($userids,0,-1).')'."";
+                      $getuser = $this->usersInterface->getallByRaw($condition,array('id','email','name'));
+                      foreach($getuser as $getuser)
+                      {
+                        $userArray[$getuser->id] = $getuser->name? $getuser->name : $getuser->email ;
+                      }
+                    array_walk($commentArray, function(&$value, $key, $sourceArray)
+                    { 
+                       
+                         
+                        if(array_key_exists($value['created_by'], $sourceArray))
+                        {
+                             $value['name'] = $sourceArray[$value['created_by']];
+                        }
+
+                    },$userArray);
+                }
+                return \View::make('web.discussiondetail',compact('discussiondetail','login','getsimilararticle','commentArray'));
 
             }
             else

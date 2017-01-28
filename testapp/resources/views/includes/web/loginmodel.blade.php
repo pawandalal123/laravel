@@ -1,13 +1,6 @@
 <div class="modal-body">
-              <h3 class="centerline"><span>Social login</span></h3>
-              <div class="facebooklogin">
-                <a href="{{URL::to('sociallogin/facebook')}}" class="btn btn-facebook btn-block btn-lg">Login <span>with</span> Facebook</a>
-                <i class="fa fa-facebook Ficon"></i>
-              </div>
-              <div class="googlelogin mt15">
-               <a href="{{URL::to('sociallogin/google')}}" class="btn btn-google btn-block btn-lg">Login <span>with</span> Google</a>
-               <i class="fa fa-google-plus Gicon"></i>
-              </div>
+         
+        
               <h3 class="centerline mt30"><span>or login/signup with email</span></h3>
               
                 <div class="form-group">

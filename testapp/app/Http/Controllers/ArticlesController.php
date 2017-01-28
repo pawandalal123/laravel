@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Input;
 use Appfiles\Common\Functions;
 use Appfiles\Repo\CategoryInterface;
 use Appfiles\Repo\SubcategoryInterface;
+Use Datetime;
 
 
 
@@ -103,7 +104,42 @@ class ArticlesController extends Controller
                 $conditionRaw='status=1 and article_url !="'.$articleurl.'"';
                 $articlaCatlist = $this->category->getallBy(array('type'=>1,'status'=>1),array('name'));
                 $getsimilararticle = $this->articles->getallByRaw($conditionRaw,array('title','article_url'),6);
-                return \View::make('web.articledetail',compact('articledetail','login','articlaCatlist','getsimilararticle'));
+                $getcomments = Comments::where(array('commented_id'=>$articledetail->id,'status'=>1,'type'=>1))->get();
+                $userids='';
+                $commentArray = array();
+                $userArray = array();
+                if(count($getcomments)>0)
+                {
+                    foreach($getcomments as $getcomments)
+                    {
+                         $imagePatah = URL::asset('web/images/profilePic.png');
+                        $userids.=$getcomments->comment_by.',';
+                        $commentArray[$getcomments->id]= array('comment'=>$getcomments->comment,
+                                                               'created_by'=>$getcomments->comment_by,
+                                                               'name'=>'',
+                                                               'image'=>$imagePatah,
+                                                               'commnetdate'=>$getcomments->created_at);
+
+                   }
+                      $condition = "id in ".'('.substr($userids,0,-1).')'."";
+                      $getuser = $this->usersInterface->getallByRaw($condition,array('id','email','name'));
+                      foreach($getuser as $getuser)
+                      {
+                        $userArray[$getuser->id] = $getuser->name? $getuser->name : $getuser->email ;
+                      }
+                    array_walk($commentArray, function(&$value, $key, $sourceArray)
+                    { 
+                       
+                         
+                        if(array_key_exists($value['created_by'], $sourceArray))
+                        {
+                             $value['name'] = $sourceArray[$value['created_by']];
+                        }
+
+                    },$userArray);
+                }
+                // dd($commentArray);
+                return \View::make('web.articledetail',compact('articledetail','login','articlaCatlist','getsimilararticle','commentArray'));
 
             }
             else

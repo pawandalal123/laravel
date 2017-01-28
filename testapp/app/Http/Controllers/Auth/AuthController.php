@@ -272,6 +272,20 @@ class AuthController extends Controller
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
             'is_register'=>1]);
+        if($Makeuser)
+        {
+            $profile_id = rand(1000,999999);
+            $uniqName =explode('@', $data['email']);
+            $lastInsertedId= $Makeuser->id;
+            $UersDetail =  new Userdetail();
+            $UersDetail->user_id=$lastInsertedId;
+            $UersDetail->profile_id=$profile_id;
+            $UersDetail->profile_url=$profile_id;
+            $UersDetail->save();
+            
+           return $Makeuser;
+ 
+        }
  
     }
 

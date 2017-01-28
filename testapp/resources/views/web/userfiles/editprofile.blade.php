@@ -5,6 +5,13 @@
       <div class="row">
         <div class="col s12 m12 l12 card step">
         <div class="card-body">
+           @if(Session::has('message'))
+        <div class="alert alert-dismissible alert-{{ Session::get('alert-class', 'alert-info') }} mt10    ">
+        <button type="button" class="close" data-dismiss="alert">×</button>
+        {{ Session::get('message') }}
+        </div>
+
+        @endif
           <div id="rootwizard1" class="form-wizard form-wizard-horizontal">
               <div class="form-wizard-nav">
                 <div class="progress" style="width: 75%;">
@@ -20,22 +27,7 @@
                     <span class="step">2</span> 
                     <span class="title">Social Info</span></a>
                   </li>
-                  <!-- <li>
-                    <a href="{{URL::to('editprofile/attachment')}}" >
-                    <span class="step">3</span> 
-                    <span class="title">Attachment Module</span></a>
-                  </li> -->
-                  <!-- <li>
-                    <a href="" >
-                    <span class="step">4</span> 
-                    <span class="title">Education Module</span></a>
-                  </li> -->
-                 <!--  <li>
-                    <a href="{{URL::to('editprofile/employment')}}">
-                    <span class="step">5</span> 
-                    <span class="title">Employment Detail</span>
-                  </a>
-                  </li> -->
+                 
                 </ul>
               </div>
               <div class="tab-content clearfix">

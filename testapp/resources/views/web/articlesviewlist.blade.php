@@ -1,5 +1,6 @@
 @extends('layout.default')
 @section('content')
+{{--*/ $categorylist=$catlist /*--}}
 <section class="top-blue-sec">
   <div class="container">
     <div class="row">
@@ -16,20 +17,20 @@
         <div class="sidebar">
           <p><strong>Refine Results</strong></p>
           <label>Category</label>
-          <select class="browser-default">
-            <option value="" disabled="" selected="">Select</option>
-            <option value="1">Option 1</option>
-            <option value="2">Option 2</option>
-            <option value="3">Option 3</option>
+          <select class="browser-default catlistchange">
+            <option value="" rel=''>Select</option>
+           @if(count($categorylist)>0)
+            @foreach($categorylist as $categorylist)
+              <option value="{{str_replace(' ','-',$categorylist->name)}}" rel="{{$categorylist->id}}">{{$categorylist->name}}</option>
+            @endforeach()
+            @endif
           </select>
           <label>Sub Category</label>
-          <select class="browser-default">
-            <option value="" disabled="" selected="">Select</option>
-            <option value="1">Option 1</option>
-            <option value="2">Option 2</option>
-            <option value="3">Option 3</option>
+          <select class="browser-default subcatlist">
+            <option value="">Select</option>
+           
           </select>
-          <button class="waves-effect waves-light btn">Search</button>
+          <button class="waves-effect waves-light btn articlesearch">Search</button>
         </div>
         @if(Auth::check())
         @include('includes.partials.articleform')
@@ -44,16 +45,16 @@
           <div class="job-viewby-number">
             <div class="row">
               <div class="col s6 m6 l6"><input type="search" placeholder="Search" name=""></div>
+              <form id="sortbyform">
               <div class="col s6 m6 l6 right-align">
-                <select class="browser-default">
+                <select class="browser-default" name="sort">
                   <option value="" disabled selected>Sort by: Date</option>
-                  <option value="1">Option 1</option>
-                  <option value="2">Option 2</option>
-                  <option value="3">Option 3</option>
+                  <option value="asc">Date Asc</option>
+                  <option value="desc">Date Desc</option>
+                  <!-- <option value="3">Option 3</option> -->
                 </select>
-
               </div>
-
+              </form>
             </div>
           </div>
 
@@ -71,7 +72,7 @@
             </div>
           </div>
            @endforeach()
-          <?php echo $articlelist->render();?>
+          <?php echo $articlelist->appends(Input::except('page'))->render();?>
           @else
           <div class="text-center">No article found......</div> 
          @endif
@@ -88,6 +89,10 @@
 <script type="text/javascript">
    $(document).ready(function() {
     $('select').material_select();
+    $("#sortbyform").change(function()
+  {
+    $( "#sortbyform" ).submit();
+  });
   });
 </script>
 @stop

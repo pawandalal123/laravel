@@ -1,0 +1,1018 @@
+
+ 
+
+        $(document).ready(function()
+        {
+            //setInterval(function(){ remainingTime() },1000);
+            var count = 0;
+            var timer = $.timer(
+            function(){
+            var remainingTime = $("#totalTime").val();
+            var m=Math.floor(remainingTime/60);
+            var s=remainingTime%60;
+            if(remainingTime <= 0)
+            {   
+                timer.pause();
+                alert('Your time is over');
+                var eventname = $('input[name=eventname]').val();
+                var eventid = $('input[name=eventid]').val();
+				var orderid = $('input[name=orderid]').val();
+				var _token = $('input[name=_token]').val();
+				$.post(APIURL+'/order/updateholdtime',{'orderid':orderid,'_token':_token},function(data,status)
+				{
+					if(status=='success')
+					{
+						if(data=='success')
+						{
+							window.location.href=SITE_URL+'event/'+eventname+'/'+eventid+'?error=true';
+						}
+					}
+					else
+					{
+						alert('Some thing wrong');
+					}
+				})
+            }
+            else
+            {
+                remainingTime = remainingTime-1;
+                $('.min').text(m);
+                $('.sec').text(s);
+                $("#totalTime").val(remainingTime);
+            }
+            },
+            1000,
+            true
+        );  
+            $('.hidelocation').hide();
+            $(".group1").colorbox({rel:'group1'});
+            $('#time,#timeend').datetimepicker({
+                datepicker:false,
+                format:'H:i',
+                step:5
+            });
+
+            $('#datetimepicker2,#datetimepickerend').datetimepicker({
+               // yearOffset:0,
+                lang:'en',
+                timepicker:false,
+                format:'Y-m-d',
+                formatDate:'Y-m-d',
+                //minDate:'1940/01/02' // yesterday is minimum date  
+            });
+
+			$(document).on("mouseover",".ddcalendar", function(e){ 
+				$('.ddcalendar').datetimepicker({
+					yearOffset:0,
+					lang:'en',
+					timepicker:true,
+					format:'Y-m-d H:i',
+					formatDate:'Y-m-d H:i',
+					minDate:0,
+					step:15
+					
+					//minDate:'-1970/01/2',
+				   // maxDate:'+1970/01/2'
+					//minDate:'-1970-01-02', // yesterday is minimum date
+					//maxDate:'+2025-01-02' // and tommorow is maximum date calendar
+				});
+			});
+
+            $(document).on('change','select[name=eventcategory]',function()
+            {
+                var category_id = $(this).val();
+                var _token = $('input[name=_token]').val();
+                $.post(SITE_URL+'subcategorylist',{'category_id':category_id,'_token':_token},function(data,status)
+                {
+                     $('select[name=eventsubcategory]').html('');
+                     $('select[name=eventsubcategory]').html(data);
+                });
+            });
+            
+
+            $('body').on("click","#closemodel",function()
+            {
+                closemodel();
+            });
+
+            /*$('body').on('change','.ticketquantityold',function()
+            {
+            	var newtotalprice=0;
+            	var tid = $(this).attr('id');
+            	$('.ticketquantity').each(function() 
+				{
+			        var n= parseInt($(this).val());
+					var q = $('.price'+tid).text();
+					var total = n*q;
+					newtotalprice+=total;
+				    $('.bookingprice').text(newtotalprice);
+				   
+	            });
+            });
+            $('body').on('change','.ticketquantity',function()
+            {
+            	var newtotalprice=0;
+            	var tid = $(this).attr('id');
+            	$('.ticketquantity').each(function() 
+				{
+			        var n= parseInt($(this).val());
+					var q = $('.price'+tid).text();
+					var total = n*q;
+					newtotalprice+=total;
+				    $('.bookingprice').text(newtotalprice);
+				   
+	            });
+            });*/
+           
+            /*$('#addressNext').click(function()
+            {
+                var _token = $('input[name=_token]').val();
+                var orderid = $('input[name=orderid]').val();
+                var firstname =$('input[name=userfname]').val() ;
+                var lastname = $('input[name=userlname]').val() ;
+                var email = $('input[name=useremail]').val() ;
+                var address = $('input[name=address]').val() ;
+                var city = $('input[name=city]').val() ;
+                var state = $('input[name=state]').val() ;
+                var country = $('input[name=country]').val() ;
+                var Zipcode = $('input[name=zipcode]').val() ;
+                var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+               // var phonemsg=new RegExp(/^(0-?)?(\([0-9]\d{2}\)|[0-9]\d{2})-?[0-9]\d{2}-?\d{4}$/i);
+              // var mobvalid=phonemsg.test(mobile)
+               var valid = emailRegex.test(email);
+                if(firstname=='')
+                {
+                    alert('Please Enter first Name');
+                    return false;
+                }
+                if(lastname=='')
+                {
+                    alert('Please Enter first lastname');
+                    return false;
+                }
+                if(!valid)
+                {
+                    alert('Please Enter valid email address');
+                    return false;
+                }
+                if(address=='')
+                {
+                    alert('Please Enter first address');
+                    return false;
+                }
+                if(city=='')
+                {
+                    alert('Please Enter first city');
+                    return false;
+                }
+                if(state=='')
+                {
+                    alert('Please Enter first state');
+                    return false;
+                }
+                if(country=='')
+                {
+                    alert('Please Enter first country');
+                    return false;
+                }
+                else
+                {
+                    var buttontext = $(this).text();
+                    $.post(SITE_URL+'savedetailandnext',{'orderid':orderid,'_token':_token,'firstname':firstname,'lastname':lastname,'email':email,'address':address,'city':city,'state':state,'country':country,'Zipcode':Zipcode},function(data,status)
+                    {
+                        if(buttontext =='Next')
+                        {
+                            $('.content_b1').hide();
+                            $('.content_b2').show();
+                        }
+                        else
+                        {
+                            alert('alert');
+                        }
+                    });
+                }
+            });*/
+            
+            $('.ordersubmit').click(function()
+            {
+                
+                var _token = $('input[name=_token]').val();
+                var orderid = $('input[name=orderid]').val();
+                var email = $('input[name=Email]').val() ;
+                var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+                var valid = emailRegex.test(email);
+                var Mobile=$('input[name=Mobile]').val() ;
+			    var phonemsg=new RegExp(/^(0-?)?(\([0-9]\d{2}\)|[0-9]\d{2})-?[0-9]\d{2}-?\d{4}$/i);
+			    var mobvalid=phonemsg.test(Mobile)
+				var err = 0;
+				if(!valid)
+                {
+                	swal({ title: "Oops...", text: "Please Enter valid email address", type: "error" });
+                    err++;
+                    
+                }
+                if(!mobvalid)
+                {
+                	swal({ title: "Oops...", text: "Please Enter valid mobile number", type: "error" });
+                    
+                    err++;
+                    
+                }
+				//var inputData = [];
+				$('.inputData').each(function()
+				{
+					var queryString = [];
+					if($(this).hasClass("inputRequired") && $(this).val()=='')
+					{
+						var errorfor  = this;
+						showerror(errorfor);
+						err++;
+				    }
+					
+				});
+				
+				if(err==0)
+				{
+					$(this).text('Proccessing').attr("disabled", 'disabled');
+					var inputData = $(':input').serialize();
+
+					$.ajax({
+						  type: "POST",
+						  url: APIURL+'/order/placeorder',
+						  data: inputData+"&orderid="+orderid+"&_token="+_token,
+						  dataType: 'json',
+					        success: function (response) {
+					        	//alert(response.status);
+					        	//alert(orderid);
+					        	if(response.status=='payment')
+					        	{
+					        		window.location = SITE_URL+'payment/'+orderid;
+
+					        	}
+					        	else if(response.status=='free')
+					        	{
+					        		window.location = SITE_URL+'ordersuccess/'+orderid;
+
+					        	}
+					        	},
+					        error: function (response) {
+					            alert('Please try later'); 
+					            $(this).text('Submit').prop("disabled", false);
+					        }
+							});
+					
+				}
+            });
+
+
+
+            $('#completeorder').click(function()
+            {
+				var _token = $('input[name=_token]').val();
+                var firstname =$('input[name=userfname]').val() ;
+				var orderid = $('input[name=orderid]').val();
+                var lastname = $('input[name=userlname]').val() ;
+                var email = $('input[name=useremail]').val() ;
+                var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+                var valid = emailRegex.test(email);
+                if(firstname=='')
+                {
+                    alert('Please Enter first Name');
+                    return false;
+                }
+                if(lastname=='')
+                {
+                    alert('Please Enter first lastname');
+                    return false;
+                }
+                if(!valid)
+                {
+                    alert('Please Enter valid email address');
+                    return false;
+                }
+				else
+				{
+					var buttontext = $(this).text();
+					 $.post(SITE_URL+'savedetailandorder',{'orderid':orderid,'_token':_token,'firstname':firstname,'lastname':lastname,'email':email,'buttontext':buttontext},function(data,status)
+                    {
+						if(status=='success')
+						{
+							if(buttontext =='Next')
+							{
+								$('.content_b1').hide();
+                                $('.content_b2').show();
+							}
+							else
+							{
+								alert('successfully order complete');
+								window.location.reload();
+							}
+						}
+					});
+				}
+
+            });
+
+		$(".Attendselect").on("change",function()
+		{
+			var formName = $(this).val();
+			var copyHTML = $("#"+formName).html();
+			alert(copyHTML);
+
+			//$(copyHTML+"")
+			// var i = 0;
+			// var input_name = null;
+
+			// $("#"+formName+ 'input').each(function () 
+			// {
+			// 	var copyHTML = $("#"+formName).html();
+			// 	alert
+			//    var new_input_name = $(this).attr('name').substring(0, $(this).attr('name').indexOf('['));
+			//    if (input_name !== new_input_name) {
+			//        input_name = new_input_name;
+			//        i = 0;
+			//    }
+
+			//    $(this).attr('name', input_name + '[' + i + ']');
+			//    i++;
+			// });
+			//    alert(input_name);
+		});
+
+     });
+        
+        function makesearUrl(value,searchfor)
+        {
+        	
+            var urlpram='';
+            if(searchfor=='keyword')
+            {
+               var location = $('input[name=headerlocation]').val();
+               urlpram=location+'/'+value;
+
+            }
+            if(searchfor=='city')
+            {
+                 var keyword = $('input[name=keyword]').val();
+                 urlpram=value+'/'+keyword;
+            }
+           
+            
+            window.location.href=SITE_URL+'search/'+urlpram;
+        }
+        function loginbox(loginfor,id)
+        {
+            var _token = $('input[name=_token]').val();
+            $.post(SITE_URL+'ajaxlogin',{'loginfor':loginfor,'id':id,'_token':_token},function(data,status)
+                {
+                    $('#modelcontent').html(data);
+                });
+        }
+		function messagebox(userid,eventid)
+		{
+				var _token = $('input[name=_token]').val();
+				$.post(SITE_URL+'messagebox',{'id':userid,'event_id':eventid,'_token':_token},function(data,status)
+				{
+					$('#modelcontent').html(data);
+				});	
+		}
+		function setreminderbox(eventid)
+		{
+				var _token = $('input[name=_token]').val();
+				$.post(SITE_URL+'setreminderbox',{'id':eventid,'_token':_token},function(data,status)
+					{
+						$('#modelcontent').html(data);
+					});	
+		}
+		
+		function reportincorrecthandler(eventid)
+		{
+			var _token = $('input[name=_token]').val();
+			$.post(SITE_URL+'reportincorrecthandler',{'eventid':eventid,'_token':_token},function(data,status)
+			{
+				$('#modelcontent').html(data);
+			});	
+		}
+        function freeticketCheckoutlogin(buytickets)
+        {
+             modelblock('Login to continue','<div id="modelcontent"></div>','small','small'); 
+            loginbox('buytickets');
+        }
+        function followwithlogin(organiserid)
+        {
+            modelblock('Login to continue','<div id="modelcontent"></div>','small','small'); 
+            loginbox('followorganiser',organiserid);
+        }
+		function favouritewithlogin(eventid)
+        {
+            modelblock('Login to continue','<div id="modelcontent"></div>','small','small'); 
+            loginbox('markfavourite',eventid);
+        }
+		function makeview(viewfor,id)
+		{
+			var _token = $('input[name=_token]').val();
+			$.post(SITE_URL+'viewconter',{'id':id,'viewfor':viewfor,'_token':_token},function(data,status)
+			{
+			});
+		}
+		function loadfriendbox(id)
+		{
+			var _token = $('input[name=_token]').val();
+			$.post(SITE_URL+'loadfriendbox',{'id':id,'_token':_token},function(data,status)
+			{
+				$('#modelcontent').html(data);
+			});
+		}
+		function forwardtofriend(id)
+		{
+			 modelblock('Forward the event detail to friend','<div id="modelcontent"></div>','small','small'); 
+            loadfriendbox(id);
+		}
+        function showformfor(formfor)
+        {
+            if(formfor=='register')
+            {
+                $('.registerform').show();
+                $('.loginform').hide();
+            }
+            if(formfor=='login')
+            {
+                $('.loginform').show();
+                $('.registerform').hide();
+            }
+        }
+		function setreminderevent(eventid)
+		{
+			
+			var name = $('input[name=name]').val();
+			var email = $('input[name=user_email]').val();
+            var days = $('select[name=days]').select().val();
+			var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+            var valid = emailRegex.test(email);
+			var _token = $('input[name=_token]').val();
+			if(name=='')
+			{
+				 $('input[name=name]').parent().addClass("has-error");
+				 var errorfor  = 'input[name=name]';
+				// showerror('input[name=name]');
+				// $('input[name=name]').parent().append('<div>* This Field is require</div>');
+			}
+		    if(!valid)
+			{
+				$('input[name=user_email]').parent().addClass("has-error");
+				//$('input[name=user_email]').parent().append('<div>* This Field is require</div>');
+				return false;
+			}
+			
+			if(days > 0)
+			{
+				$.post(SITE_URL+'setreminderevent',{'id':eventid,'name':name,'email':email,'days':days,'_token':_token},function(data,status)
+				{
+					if(status=='success')
+					{
+						$(':input').val('');
+						
+						if(data==1)
+						{
+							$('.modal-header').append('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Your Reminder set successfully</div>');
+							setTimeout(function(){closemodel()},2000);
+							
+						}
+						
+					}
+				});
+			}
+			else
+			{
+				alert('Please selct daily reminder');
+			
+			}
+		
+		}
+		function submitforwardbox(eventid)
+		{
+			var name = $('input[name=name]').val();
+			var email = $('input[name=user_email]').val();
+            var message = $('input[name=message]').val();
+			var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+            var valid = emailRegex.test(email);
+			var _token = $('input[name=_token]').val();
+			if(name=='')
+			{
+				 $('input[name=name]').parent().addClass("has-error");
+				 $(this).parent().append('<div>* This Field is require</div>');
+			}
+		    if(!valid)
+			{
+				$('input[name=user_email]').parent().addClass("has-error");
+				$(this).parent().append('<div>* This Field is require</div>');
+				return false;
+			}
+		    if(message=='')
+			{
+				$('input[name=message]').parent().addClass("has-error");
+				$(this).parent().append('<div>* This Field is require</div>');
+			}
+			else
+			{
+				$.post(SITE_URL+'saveforwardform',{'eventid':eventid,'name':name,'email':email,'message':message,'_token':_token},function(data,status)
+				{
+					if(status=='success')
+					{
+						$(':input').val('');
+						
+						if(data==1)
+						{
+							$('.modal-header').append('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Your message sent successfully</div>');
+							
+						}
+						
+					}
+				});
+			
+			}
+		}
+		function submitmessagebox(userid,event_id)
+		{
+			var name = $('input[name=name]').val();			
+			var email = $('input[name=user_email]').val();
+			var subject = $('input[name=subject]').val();
+            var message = $('textarea#textAreamessage').val();
+			var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+            var valid = emailRegex.test(email);
+			var _token = $('input[name=_token]').val();
+			
+			if(name=='')
+			{
+				 $('input[name=name]').parent().addClass("has-error");
+				 $(this).parent().append('<div>* This Field is require</div>');
+			}
+		    if(!valid)
+			{
+				$('input[name=user_email]').parent().addClass("has-error");
+				$(this).parent().append('<div>* This Field is require</div>');
+				return false;
+			}
+			if(subject=='')
+			{
+				 $('input[name=subject]').parent().addClass("has-error");
+				 $(this).parent().append('<div>* This Field is require</div>');
+			}
+		    if(message=='')
+			{
+				$('input[name=message]').parent().addClass("has-error");
+				$(this).parent().append('<div>* This Field is require</div>');
+			}
+			else
+			{ 
+				$.post(SITE_URL+'saveusercontectform',{'userid':userid,'event_id':event_id,'name':name,'email':email,'subject':subject,'message':message,'_token':_token},function(data,status)
+				{
+					
+					if(status=='success')
+					{
+						$(':input').val('');
+						
+						if(data==1)
+						{   
+							$('.modal-header').append('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Your message sent successfully</div>');
+							
+						}
+						
+					}
+				});
+			}
+		}
+		function submitincorrect(eventid)
+		{
+			var email = $('input[name=user_email]').val();
+            var message = $('textarea#textAreamessage').val();
+			
+			var emailRegex = new RegExp(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/);
+            var valid = emailRegex.test(email);
+			var _token = $('input[name=_token]').val();
+		    if(!valid)
+			{
+				$('input[name=user_email]').parent().addClass("has-error");
+				$(this).parent().append('<div>* This Field is require</div>');
+				return false;
+			}
+			if($('#error_report_phone:checked').length>0)
+			{
+				var checkedvalue = [];
+				$('#error_report_phone:checked').each(function()
+				{
+					checkedvalue.push($(this).val());
+				});
+				$.post(SITE_URL+'handelincorrect',{'eventid':eventid,'repotvalue':checkedvalue,'email':email,'message':message,'_token':_token},function(data,status)
+			    {
+					if(data==1)
+					{
+						$('#modelcontent').html('<div class="alert alert-success fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Thanks You, we revert you back soon..</div>');
+						setTimeout(function(){closemodel()},2000);
+					}
+				});
+			}
+			else
+			{
+				alert('Please slect one option');
+			}
+		    
+		}
+        function checkuserlogin(loginfor)
+        {
+            var email = $('input[name=user_email]').val();
+            var password = $('input[name=password]').val();
+            var _token = $('input[name=_token]').val();
+            $.getJSON(SITE_URL+'ajaxauthnticate',{'email':email,'password':password,'_token':_token},function(data,status)
+            {
+                 $.each(data, function(index, element)
+                 {
+					 if(index=='error')
+					 {
+						 if(element.email)
+						 {
+							 $('input[name=user_email]').parent().addClass("has-error");
+							 $(this).parent().append('<div>* This Field is require</div>');
+						 }
+						 if(element.password)
+						 {
+							 $('input[name=password]').parent().addClass("has-error");
+							 $(this).parent().append('<div>* This Field is require</div>');
+						 }
+					 }
+					 else if(index == 'loginsuccess')
+					 {
+						 if(element.auth==true)
+						 {
+							 var userId = element.user;
+							 //var userId = alert(element.user);
+							 if(loginfor=='buytickets')
+							 {
+								 closemodel();
+								 var checkquqntityAlert = checkquqntity();
+								 if(checkquqntityAlert==1)
+								 {
+									 window.location.reload();
+								 }
+							 }
+							 if(loginfor=='followorganiser')
+							 {
+								 var followUserId = $('input[name=organisderid]').val();
+								 closemodel();
+								 followorganiser(followUserId);
+								 window.setTimeout(function(){location.reload()},2000)
+							 }
+							 if(loginfor=='markfavourite')
+							 {
+								 var favouriteeventid = $('input[name=favouriteeventid]').val();closemodel();
+								 closemodel();
+								 favouritevent(favouriteeventid);
+								 window.setTimeout(function(){location.reload()},2000)
+							 }
+						 }
+						 else
+						 {
+							  $(':input').val('');
+							  $('.modal-header').append('<div class="alert alert-warning fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Invalid Login Details..</div>');
+							 return false;
+						 }
+					 }
+                });
+            });
+        }
+		function contectuser(userid,eventid)
+		{
+			 modelblock('Contact to  the organizer','<div id="modelcontent"></div>','small','small');
+			 messagebox(userid,eventid);
+		}
+		function setreminder (eventid)
+		{
+			modelblock('Set reminder for event','<div id="modelcontent"></div>','small','small');
+			setreminderbox(eventid);
+		}
+		function reportincorrect(eventid)
+		{
+			 modelblock('Report incorrect','<div id="modelcontent"></div>','small','small');
+			 reportincorrecthandler(eventid);
+			
+		}
+		function favouritevent(eventid)
+        {
+            var _token = $('input[name=_token]').val();
+            $.getJSON(SITE_URL+'favouritevent',{'eventid':eventid,'_token':_token},function(data,status)
+            {
+				 $.each(data, function(index, element)
+                 {
+					 if(index=='success')
+					{
+						 if(element.status==0)
+						{
+							//$('.favourite').removeClass("btn-primary");
+							$('.favourite'+eventid).addClass("favclass");
+						}
+						else if(element.status==1)
+						{
+							$('.favourite'+eventid).removeClass("favclass");
+							//$('.favourite').addClass("btn-primary");
+						}
+						else
+						{
+							alert('Please try later');
+						}
+					}
+				 });
+            });
+        }
+        function followorganiser(organiserid)
+        {
+            var _token = $('input[name=_token]').val();
+            $.getJSON(SITE_URL+'followorganiser',{'organiserid':organiserid,'_token':_token},function(data,status)
+            {
+				 $.each(data, function(index, element)
+                 {
+					 if(index=='success')
+					{
+						 if(element.status==0)
+						{
+							var totlafollower = $('.totalfollowers').text();
+							$('.totalfollowers').text(parseInt(totlafollower)+parseInt(1));
+							$('.userFollow').text('Unfollow');
+							swal({ title: "Done", text: "Follow successfully", type: "success" });
+						}
+						else if(element.status==1)
+						{
+							var totlafollower = $('.totalfollowers').text();
+							$('.totalfollowers').text(parseInt(totlafollower)-parseInt(1));
+							$('.userFollow').text('Follow');
+							swal({ title: "Done", text: "Unfollow successfully", type: "success" });
+						}
+					}
+				 });
+            });
+        }
+        function registerUser(registerfor)
+        {
+            var email = $('input[name=email]').val();
+            var password = $('input[name=password]').val();
+            var _token = $('input[name=_token]').val();
+            $.getJSON(SITE_URL+'ajaxregister',{'email':email,'password':password,'_token':_token},function(data,status)
+            {
+            	$.each(data, function(index, element)
+                 {
+					 if(index=='error')
+					 {
+						 if(element.email)
+						 {
+							 $('input[name=email]').parent().addClass("has-error");
+						 }
+						 if(element.password)
+						 {
+							 $('input[name=password]').parent().addClass("has-error");
+						 }
+						 if(element.emailexist)
+						 {
+							 $('.modal-header').append('<div class="alert alert-warning fade in">Email Id Is Already Exist.</div>');
+						 }
+					 }
+					 else if(index == 'loginsuccess')
+					 {
+						 if(element.auth==true)
+						 {
+							 //var userId = element.user;
+							 //var userId = alert(element.user);
+							 if(registerfor=='buytickets')
+							 {
+								 closemodel();
+								 var checkquqntityAlert = checkquqntity();
+								 if(checkquqntityAlert==1)
+								 {
+									 window.location.reload();
+								 }
+							 }
+							 if(registerfor=='followorganiser')
+							 {
+								 var followUserId = $('input[name=organisderid]').val();
+								 closemodel();
+								 followorganiser(followUserId);
+								 window.setTimeout(function(){location.reload()},2000)
+							 }
+							 if(registerfor=='markfavourite')
+							 {
+								 var favouriteeventid = $('input[name=favouriteeventid]').val();closemodel();
+								 closemodel();
+								 favouritevent(favouriteeventid);
+								 window.setTimeout(function(){location.reload()},2000)
+							 }
+						 }
+						 else
+						 {
+							  $(':input').val('');
+							  $('.modal-header').append('<div class="alert alert-warning fade in"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Please Try later..</div>');
+							 return false;
+						 }
+					 }
+				});
+
+            });
+        }
+        function checkquqntity()
+        {
+            var quanityselect=0;
+            $('.checkqu').each(function()
+            {
+                var valuesele = $(this).select().val();
+                quanityselect+=parseInt(valuesele);
+            });
+            if(quanityselect>0)
+            {
+            	var inputData = $('.ticketquantity').serialize();
+            	//var inputdonate = $('.checkqu :input').serialize();
+            	var _token = $('input[name=_token]').val();
+            	var eventid = $('input[name=eventid]').val();
+            	$.ajax({
+						  type: "POST",
+						  url: SITE_URL+'api/order/saveorderdata',
+						  data: inputData+"&eventid="+eventid+"&_token="+_token,
+						  dataType: 'json'
+						}).done(function(data)
+						{
+							alert(data);
+						});
+
+                //$('#ticketbuyform').submit();
+            }
+            else
+            {
+                alert('Please select quantity for a ticket');
+				return 1;
+            }
+        }
+        function modelblock(header,body,size)
+        {
+            closemodel();
+            if(typeof(footer) == 'undefined'){
+                footer = '';
+            }
+            if(typeof(size) == 'undefined'){
+                size = 'small';
+            }
+            var template = '<div class="modelbox"><div id="myModal" class="modal">'+
+                '<div class="modal-dialog '+size+'">'+
+                    '<div class="modal-header">'+
+                    '<button type="button" class="close" id="closemodel" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                        '<h4>'+header+'</h4>'+
+                    '</div>'+
+                    '<div class="content">'+body+'</div>'+
+                '</div>'+
+            '</div></div>';
+            $('body').append(template);
+        }
+
+        function closemodel()
+        {
+            $('#myModal').remove();
+        }
+        function freeticketCheckout(ticketid)
+        {
+            var quantity = $('.quntity'+ticketid).select().val();
+            var _token = $('input[name=_token]').val();
+            if(quantity<1 || quantity=='')
+            {
+                alert('Please select tickets quantity');
+                return false;
+            }
+            else
+            {
+                //$('#page_hide').show();
+                $.post(SITE_URL+'makeorder',{'ticketid':ticketid,'quantity':quantity,'_token':_token},function(data,status)
+                {
+                  if(status=='success')
+                  {
+                     window.location.href=SITE_URL+'completeorder/'+data;
+
+
+                  }
+                });
+
+            }
+        }
+        function CheckDataSearch(Form)
+		{			
+			var serachKeyword=Form.keyword.value.replace(/\s/g, '-').toLowerCase();
+			var location = Form.cityname.value.replace(/\s/g, '-').toLowerCase();
+			var searchFrom = $('.selectfrom').val();
+			var country = location.split(",")[1];
+			var city = location.split(",")[0];
+			var _token = $('input[name=_token]').val();
+			
+			if(city=='')
+			{
+				alert("Please select a city");
+				Form.cityname.focus();
+				return false;
+
+			}
+			
+			else if (Form.keyword.value.replace(/\s/g, '-').length > 119)
+			{
+					alert("Enter less than 120 characters for search.");
+					Form.keyword.focus();
+					return false;
+			}
+			else 
+			{
+				var url = SITE_URL+'search';
+				var eventstime = $('select[name=eventstime]').select().val();
+			    if(searchFrom=='dropdown'  || country!==undefined)
+			    {
+			    	var urlpram =country+'--'+city+'/'+eventstime;
+			    	if(serachKeyword)
+					{
+						urlpram =urlpram+'/'+serachKeyword;
+					}
+					url = url+'/'+urlpram
+					window.location =url;
+					return false;
+			    }
+			    else
+			    {
+			    	var city = Form.cityname.value.replace(/\s/g, '-').toLowerCase();
+			    	$.post(APIURL+'/city/checklocation',{'location':city,'_token':_token},function(data,status)
+					{
+						if(data)
+						{
+							//alert(data);
+							var urlpram =data+'/'+eventstime;
+							if(serachKeyword)
+							{
+								urlpram =urlpram+'/'+serachKeyword;
+							}
+							url = url+'/'+urlpram
+							window.location =url;
+							return false;
+						}
+						
+					});
+			    	
+			    }
+			    return false;
+
+				//var urlpram='';
+				 
+			}
+		}
+
+		function myReplace(str, a, b) 
+		{  
+			var re = new RegExp(a, "g");
+            var ret = str.replace(re,b);
+            return ret.toLowerCase();
+        }
+
+        function showerror(errorfor)
+        {
+        	if($(errorfor).parent().hasClass("has-error"))
+			{
+
+			}
+			else
+			{
+				$(errorfor).parent().addClass("has-error");
+				$(errorfor).parent().append('<div class="validatemessage">* This Field is require</div>');
+			}
+        }
+        
+
+ $(function () {
+   $('[data-toggle="tooltip"]').tooltip()
+ })
+
+ function readURLChangeImagesell(input) {
+		   var imageId = ($(input).attr("id")).split('getimage');
+		   if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#pimgstore'+imageId[1]).css('background-image', 'url('+e.target.result+')');
+					$('#change_pic'+imageId[1]).hide()
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+function readURL(input) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+            $('#blah').show();
+			reader.onload = function (e) {
+				$('#blah').attr('src', e.target.result);
+			}
+
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+
+
+
+
+         
+     

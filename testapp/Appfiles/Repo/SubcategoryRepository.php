@@ -45,6 +45,10 @@ class SubcategoryRepository implements SubcategoryInterface
     {
         return Subcategory::where($condition)->get($columns);
     }
+    public function getallsucat($condition, $columns = array('subcategories.*'))
+    {
+        return Subcategory::join('categories','categories.id=subcategories.category_id')->where($condition)->get($columns);
+    }
     public function getByraw($condition, $columns = array('*'))
     {
         return Subcategory::whereRaw($condition)->get($columns);

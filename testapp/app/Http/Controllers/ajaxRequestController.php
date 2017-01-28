@@ -5,13 +5,14 @@ use App\Http\Requests;
 use App\Model\Common;
 use Appfiles\Repo\UsersInterface;
 use Appfiles\Repo\StateInterface;
+use Appfiles\Repo\SubcategoryInterface;
+use Appfiles\Common\Functions;
 use App\Model\Comments;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Session;
 use Mail;
-use Appfiles\Common\Functions;
 use URL;
 use Validator;
 
@@ -22,12 +23,13 @@ class AjaxRequestController extends Controller
     protected $functions;
     protected $s3;
 
-    public function  __construct(Functions $functions,UsersInterface $usersInterface,StateInterface $state)
+    public function  __construct(Functions $functions,UsersInterface $usersInterface,StateInterface $state,SubcategoryInterface $subcat)
     {
        $this->APIURL= URL::to('api/');
        $this->functions=$functions;
        $this->usersInterface = $usersInterface;
        $this->state= $state;
+       $this->subcat=$subcat;
    
       
     }
@@ -125,13 +127,32 @@ class AjaxRequestController extends Controller
 
   }
 
+  public function subcatlistajax(Request $request)
+  {
+      if($request->ajax())
+      {
+          $type=1;
+          if($request->type)
+          {
+            $type=$request->type;
+          }
+          $condition = array('category_id'=>$request->catid,'type'=>1);
+          $subcat =$this->subcat->getallBy($condition);
+          $html='<option value="" rel="">Select option</option>';
+          if(count($subcat)>0)
+          {
+            foreach($subcat as $subcat)
+            {
+              $html.='<option value='.str_replace(' ','-',$subcat->name).' rel='.$subcat->id.'>'.$subcat->name.'</option>';
 
+            }
 
-         
+          }
+          return $html;
 
-      
- 
-  
+      }
+  }
+
  
 }
 ?>

@@ -59,7 +59,7 @@ Route::group(array('namespace'=>'admin'), function()
 });
 
 
-Route::any('/articles', 'ArticlesController@index');
+Route::any('/articles/{catname?}/{subcatname?}', 'ArticlesController@index');
 Route::any('/articledetail/{articleurl}', 'ArticlesController@articledetail');
 Route::any('/deletearticle/{id}', 'ArticlesController@deletearticle');
 Route::any('/discussions', 'DiscussionController@index');
@@ -87,6 +87,7 @@ Route::get('auth/logout', 'Auth\AuthController@getLogout');
 Route::get('about/', 'mainController@about');
 
 /////////////////////////////// ajax login////
+Route::post('/subcatlistajax','ajaxRequestController@subcatlistajax');
 Route::post('/ajaxlogin','ajaxRequestController@loginform');
 Route::get('/ajaxauthnticate','Auth\AuthController@postLoginajax');
 

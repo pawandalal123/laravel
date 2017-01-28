@@ -75,10 +75,39 @@ class ArticlesRepository implements ArticlesInterface
           $articleList = $articleList->whereRaw("event_id != '".$request->idnotin."'");
 
         }
+        if(Input::has('catname'))
+        {
+          $articleList = $articleList->whereRaw("category= '".$request->catname."'");
+
+        }
+        if(Input::has('subcatname'))
+        {
+          $articleList = $articleList->whereRaw("subcategory= '".$request->subcatname."'");
+
+        }
         if(Input::has('userid'))
         {
           $articleList = $articleList->whereRaw("user_id = '".$request->userid."'");
 
+        }
+        if($request->sort)
+        {
+          switch ($request->sort)
+          {
+            case 'desc':
+              $articleList = $articleList->orderBy('created_at', 'desc');
+              break;
+            
+            case 'asc':
+              $articleList = $articleList->orderBy('created_at','asc');
+              break;
+          }
+        }
+        else
+        {
+         
+          $articleList = $articleList->orderBy('created_at','desc');
+       
         }
         if($request->paginate)
         {

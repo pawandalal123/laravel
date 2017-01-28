@@ -58,7 +58,7 @@ class ArticlesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request,$catname=false,$subcatname=false)
     {
         //////// form submit////
         if(isset($request->submitarticle))
@@ -72,7 +72,17 @@ class ArticlesController extends Controller
             }
             $this->articles->savearticle($request);
         }
-        $catlist = $this->category->getallBy(array('type'=>1,'status'=>1),array('name'));
+        if($catname)
+        {
+            $request->catname= str_replace('-',' ',$catname);
+
+        }
+        if($subcatname)
+        {
+            $request->subcatname= str_replace('-',' ',$subcatname);
+
+        }
+        $catlist = $this->category->getallBy(array('type'=>1,'status'=>1),array('name','id'));
         $subcatlist = $this->subcat->getallBy(array('type'=>1,'status'=>1),array('name'));
         $articlelist = $this->articles->articleslist($request);
         return \View::make('web.articlesviewlist',compact('articlelist','catlist','subcatlist'));
@@ -181,10 +191,7 @@ class ArticlesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
+
 
     /**
      * Show the form for editing the specified resource.

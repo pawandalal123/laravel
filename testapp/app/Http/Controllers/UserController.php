@@ -153,18 +153,37 @@ class UserController extends Controller
 
         if(isset($request->editsocial))
         {
-          $checkdetails = $this->userdetail->getBy(array(),array('user_id'=>$user->id));
+          $dataArray = array('facebook_url'=>$request->fb_url,
+                             'linkedin_url'=>$request->Linkedin_url,
+                             'googleplus_url'=>$request->g_plus_url,
+                             'twitter_url'=>$request->twitter_url);
+          $checkdetails = $this->userdetail->getBy(array('user_id'=>$user->id),array('id'));
           if($checkdetails)
           {
-            $socialinfo  =$this->userdetail->upadte();
+            $socialinfo  =$this->userdetail->upadte($dataArray,array('user_id'=>$user->id));
 
           }
           else
           {
+            $dataArray['user_id'] = $user->id;
+            $dataArray['created_at'] =date('Y-m-d H:i:s') ;
+            $socialinfo = $this->userdetail->create($dataArray);
 
           }
-           
-            
+          if($socialinfo)
+          {
+            Session::flash('message','Detail update Successfully.'); 
+            Session::flash('alert-class', 'success'); 
+            Session::flash('alert-title', 'Success');
+
+          }
+          else
+          {
+              ///throw $e;
+              Session::flash('message','Some technical problem.'); 
+              Session::flash('alert-class', 'danger'); 
+              Session::flash('alert-title', 'error');
+          }
           
         }
         $countryList = $this->country->getallBy(array('status'=>1),array('id','country'));

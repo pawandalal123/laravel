@@ -1,0 +1,62 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews
+    </IfModule>
+Options -Indexes
+    RewriteEngine On RewriteBase 
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/$ /$1 [L,R=301]
+
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+<ifmodule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
+</ifmodule>
+
+
+# Enable GZIP
+<ifmodule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript
+BrowserMatch ^Mozilla/4 gzip-only-text/html
+BrowserMatch ^Mozilla/4\.0[678] no-gzip
+BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</ifmodule>
+
+
+
+
+
+#AddEncoding gzip .jsgz .cssgz .htmlgz .datagz
+#AddType application/x-javascript .jsgz
+#AddType text/css .cssgz
+#AddType text/html .htmlgz       
+#AddType text/plain .datagz
+
+#RewriteEngine on 
+# If client accepts compressed files 
+#RewriteCond %{HTTP:Accept-Encoding} gzip 
+# and if compressed file exists 
+#RewriteCond %{REQUEST_FILENAME}gz -f 
+# send .html.gz instead of .html 
+#RewriteRule ^(.+)\.(html|css|js|data)$ $1.$2gz [L]
+
+
+#<IfModule mod_expires.c>
+#ExpiresActive On
+#ExpiresByType image/jpg "access 1 year"
+#ExpiresByType image/jpeg "access 1 year"
+#ExpiresByType image/gif "access 1 year"
+#ExpiresByType image/png "access 1 year"
+#ExpiresByType text/css "access 1 month"
+#ExpiresByType application/pdf "access 1 month"
+#ExpiresByType application/x-javascript "access 1 month"
+#ExpiresByType application/x-shockwave-flash "access 1 month"
+#ExpiresByType image/x-icon "access 1 year"
+#ExpiresDefault "access 2 days"
+#</IfModules>

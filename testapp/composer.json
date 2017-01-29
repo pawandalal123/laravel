@@ -10,22 +10,12 @@
         "illuminate/html": "^5.0@dev",
         "guzzlehttp/guzzle": "~5.3|~6.0",
         "mandrill/mandrill": "1.0.*",
-        "laravel/socialite": "2.0.*@dev",
         "barryvdh/laravel-debugbar": "^2.0",
         "maatwebsite/excel": "2.0",
-        "aws/aws-sdk-php-laravel": "~3.0",
         "predis/predis": "^1.0",
         "artesaos/seotools": "v0.7.3.6",
-        "jenssegers/mongodb": "^2.2",
-        "barryvdh/laravel-dompdf": "0.6.*",
-        "rap2hpoutre/laravel-log-viewer": "^0.4.3",
-        "paypal/rest-api-sdk-php": "*",
-        "milon/barcode": "^5.2",
-        "laravel/cashier": "~5.0",
-        "razorpay/razorpay": "1.*",
         "yajra/laravel-oci8": "~2.0",
-        "yajra/laravel-datatables-oracle": "^6.6.0",
-         "anhskohbo/no-captcha": "2.*"
+        "yajra/laravel-datatables-oracle": "^6.6.0"
 
 
 
